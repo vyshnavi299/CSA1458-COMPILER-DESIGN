@@ -1,19 +1,29 @@
 %{
 #include<stdio.h>
-int n=0;
+int n = 0; // Initialize the count of comment lines
 %}
 
 %%
-"/*"[a-zA-Z0-9 \n\t]+"*/" {n++;}
-"//"[a-zA-Z0-9 \n\t]+"//" {n++;}
+"/*".*?"*/" { n++; } // Match and count multi-line comments
+"//".* { n++; }      // Match and count single-line comments
 %%
+int yywrap(void){
+return 1;
+}
 
-int yywrap()
-{}
-
-int main()
-{
-printf("enter:");
-yylex();
-printf("no of comment lines:%d",n);
+int main(int argc, char *argv[]) {
+    if (argc != 2) {
+        printf("Usage: %s input_file\n", argv[0]);
+        return 1;
+    }
+    FILE *inputFile = fopen(argv[1], "r");
+    if (inputFile == NULL) {
+        printf("Error opening file.\n");
+        return 1;
+    }
+    yyin = inputFile;
+    yylex();
+    printf("Number of comment lines: %d\n", n);
+    fclose(inputFile);
+    return 0;
 }
