@@ -1,0 +1,45 @@
+#include<stdio.h>
+#include<ctype.h>
+
+int main() {
+    char input[100];
+    int i;
+    printf("Enter the string: ");
+    scanf("%[^\n]", input);
+
+    int ic = 0, cc = 0, oc = 0;
+    char identifiers[30], constants[30], operators[30];
+
+    for(i = 0; input[i] != '\0'; i++) {
+        if(isalpha(input[i])) {
+            identifiers[ic++] = input[i];
+        }
+        else if(isdigit(input[i])) {
+            int num = input[i] - '0';
+            while(isdigit(input[i+1])) {
+                num = num * 10 + (input[++i] - '0');
+            }
+            constants[cc++] = num;
+        }
+        else if(input[i] == '+' || input[i] == '-' || input[i] == '*' || input[i] == '=') {
+            operators[oc++] = input[i];
+        }
+    }
+
+    printf("Identifiers: ");
+    for(i = 0; i < ic; i++) {
+        printf("%c ", identifiers[i]);
+    }
+
+    printf("\nConstants: ");
+    for(i = 0; i < cc; i++) {
+        printf("%d ", constants[i]);
+    }
+
+    printf("\nOperators: ");
+    for(i = 0; i < oc; i++) {
+        printf("%c ", operators[i]);
+    }
+
+    return 0;
+}
