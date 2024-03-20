@@ -1,0 +1,76 @@
+#include <stdio.h>
+#include <stdbool.h>
+#include <ctype.h>
+
+char input[100];
+int pos = 0;
+
+bool E();
+bool T();
+bool F();
+
+bool match(char expected) {
+    if (input[pos] == expected) {
+        pos++;
+        return true;
+    }
+    return false;
+}
+
+bool E() {
+    if (T()) {
+        while (input[pos] == '+') {
+            pos++;
+            if (!T())
+                return false;
+        }
+        return true;
+    }
+    return false;
+}
+
+bool T() {
+    if (F()) {
+        while (input[pos] == '*') {
+            pos++;
+            if (!F())
+                return false;
+        }
+        return true;
+    }
+    return false;
+}
+
+bool F() {
+    if (isalpha(input[pos]) || input[pos] == '(') {
+        if (input[pos] == '(') {
+            pos++;
+            if (E() && match(')'))
+                return true;
+            else
+                return false;
+        }
+        pos++;
+        return true;
+    }
+    return false;
+}
+
+int main() {
+    printf("Recursive descent parsing for the following grammar:\n");
+    printf("E -> E + T | T\n");
+    printf("T -> T * F | F\n");
+    printf("F -> ( E ) | ID\n\n");
+
+    printf("Enter the string to be checked: ");
+    scanf("%s", input);
+
+    bool valid = E() && input[pos] == '\0';
+
+    if (valid)
+        printf("String is accepted\n");
+    else
+        printf("String is not accepted\n");
+
+    return 0;
+}
