@@ -1,0 +1,77 @@
+#include <stdio.h>
+#include <string.h>
+#include <stdlib.h>
+
+#define MAX_TOKEN_LENGTH 20
+
+// Define grammar rules
+const char *nouns[] = {"cat", "dog", "bird"};
+const char *verbs[] = {"chases", "eats", "flies"};
+
+int check_grammar(const char *input_string) {
+    char input_copy[3][MAX_TOKEN_LENGTH];
+    int token_count = 0;
+
+    // Make a copy of the input string
+    char *input_copy_ptr = strdup(input_string);
+    if (input_copy_ptr == NULL) {
+        perror("Memory allocation failed");
+        return -1;
+    }
+
+    // Tokenize input string
+    char *token = strtok(input_copy_ptr, " ");
+    while (token != NULL && token_count < 3) {
+        strcpy(input_copy[token_count], token);
+        token_count++;
+        token = strtok(NULL, " ");
+    }
+
+    // Free allocated memory
+    free(input_copy_ptr);
+
+    // Check if input string has exactly 3 tokens
+    if (token_count != 3) {
+        return 0; // Not satisfying the grammar
+    }
+
+    // Check if the first and third tokens are nouns and the second token is a verb
+    int found_noun1 = 0, found_verb = 0, found_noun2 = 0;
+    for (int i = 0; i < 3; i++) {
+        if (!found_noun1 && strcmp(input_copy[0], nouns[i]) == 0) {
+            found_noun1 = 1;
+        }
+        if (!found_verb && strcmp(input_copy[1], verbs[i]) == 0) {
+            found_verb = 1;
+        }
+        if (!found_noun2 && strcmp(input_copy[2], nouns[i]) == 0) {
+            found_noun2 = 1;
+        }
+    }
+
+    if (found_noun1 && found_verb && found_noun2) {
+        return 1; // Satisfies the grammar
+    } else {
+        return 0; // Not satisfying the grammar
+    }
+}
+
+int main() {
+    char input_string[100];
+    printf("Enter a sentence (format: noun verb noun): ");
+    fgets(input_string, sizeof(input_string), stdin);
+
+    // Remove trailing newline character
+    input_string[strcspn(input_string, "\n")] = '\0';
+
+    int result = check_grammar(input_string);
+    if (result == -1) {
+        return 1; // Error occurred
+    } else if (result == 1) {
+        printf("Input string satisfies the grammar.\n");
+    } else {
+        printf("Input string does not satisfy the grammar.\n");
+    }
+
+    return 0;
+}
